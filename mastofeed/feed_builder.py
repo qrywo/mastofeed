@@ -34,7 +34,16 @@ class FeedBuilder:
 
             content_string = str(original_status.content)
             for emoji in original_status.emojis:
-                content_string = content_string.replace(f":{emoji.shortcode}:", f'<img src="{emoji.static_url}"/>')
+                content_string = content_string.replace(f":{emoji.shortcode}:",
+                                                        ('<img rel="emoji" '
+                                                         'draggable="false" '
+                                                         'width="16" '
+                                                         'height="16" '
+                                                         'class="emojione" '
+                                                         'style="height: 1.1em; margin: -.2ex .15em .2ex; object-fit: contain; vertical-align: middle; width: 1.1em;" '
+                                                         f'alt=":{emoji.shortcode}:" '
+                                                         f'title=":{emoji.shortcode}:" '
+                                                         f'src="{emoji.static_url}"/>'))
             feed_entry.content(content=content_string, type="html")
             feed_entry.summary(summary=content_string, type="html")
 
