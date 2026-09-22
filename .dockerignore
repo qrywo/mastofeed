@@ -1,7 +1,8 @@
 .env
+.data/.env
 .git/
 .gitignore
 .idea/
 mastofeed/__pycache__/
-.venv/
 README.md
+.venv/

@@ -7,8 +7,9 @@ class MastodonClient:
     def __init__(self):
         self.APP_NAME = "mastofeed"
         self.APP_SCOPES = ["read:statuses"]
-        load_dotenv()
+        self.ENV_FILE_PATH = "./.data/.env"
         self.INSTANCE_URL = f"https://{os.getenv('MASTODON_INSTANCE_NAME')}"
+        load_dotenv(self.ENV_FILE_PATH)
 
         client_id = os.getenv("MASTODON_CLIENT_ID")
         client_secret = os.getenv("MASTODON_CLIENT_SECRET")
@@ -33,8 +34,8 @@ class MastodonClient:
                                                                 scopes=self.APP_SCOPES,
                                                                 api_base_url=self.INSTANCE_URL,
                                                                 redirect_uris=oauth_redirect_url)
-            set_key(".env", "MASTODON_CLIENT_ID", client_id)
-            set_key(".env", "MASTODON_CLIENT_SECRET", client_secret)
+            set_key(self.ENV_FILE_PATH, "MASTODON_CLIENT_ID", client_id)
+            set_key(self.ENV_FILE_PATH, "MASTODON_CLIENT_SECRET", client_secret)
         self.mastodon = Mastodon(api_base_url=self.INSTANCE_URL,
                                  client_id=client_id,
                                  client_secret=client_secret)
@@ -46,7 +47,7 @@ class MastodonClient:
             access_token = self.mastodon.log_in(code=code,
                                                 scopes=self.APP_SCOPES,
                                                 redirect_uri=oauth_redirect_url)
-            set_key(".env", "MASTODON_ACCESS_TOKEN", access_token)
+            set_key(self.ENV_FILE_PATH, "MASTODON_ACCESS_TOKEN", access_token)
             return True
         except MastodonIllegalArgumentError:
             return False

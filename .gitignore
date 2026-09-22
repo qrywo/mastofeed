@@ -1,4 +1,5 @@
 .env
-.venv/
-mastofeed/__pycache__/
+.data/.env
 .idea/
+mastofeed/__pycache__/
+.venv/
