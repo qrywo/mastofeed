@@ -1,0 +1,4 @@
+.env
+.venv/
+mastofeed/__pycache__/
+.idea/
