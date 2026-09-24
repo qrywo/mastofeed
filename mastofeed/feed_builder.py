@@ -9,9 +9,10 @@ class FeedBuilder:
     def build_feed(self, feed_url):
         feed_generator = FeedGenerator()
 
-        feed_generator.title("\U0001F3E0 " + self.mastodon_client.get_user().acct)
+        feed_generator.title("\U0001F3E0 " + self.mastodon_client.get_user().username +
+                             "@" + self.mastodon_client.get_instance_domain())
         feed_generator.subtitle(f"\U0001F464: {self.mastodon_client.get_user().display_name} " +
-                                f"({self.mastodon_client.get_user().username})\n" +
+                                f"({self.mastodon_client.get_user().username});\t" +
                                 f"\U0001F310: {self.mastodon_client.get_instance_domain()}")
         feed_generator.id(feed_url)
         feed_generator.link(href=feed_url, rel="self", type="application/atom+xml")
