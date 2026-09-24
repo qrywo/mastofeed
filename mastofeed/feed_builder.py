@@ -9,10 +9,10 @@ class FeedBuilder:
     def build_feed(self, feed_url):
         feed_generator = FeedGenerator()
 
-        feed_generator.title("\uf3e0 " + self.mastodon_client.get_user().acct)
-        feed_generator.subtitle(f"\uf464: {self.mastodon_client.get_user().display_name} " +
+        feed_generator.title("\U0001F3E0 " + self.mastodon_client.get_user().acct)
+        feed_generator.subtitle(f"\U0001F464: {self.mastodon_client.get_user().display_name} " +
                                 f"({self.mastodon_client.get_user().username})\n" +
-                                f"\uf310: {self.mastodon_client.get_instance_domain()}")
+                                f"\U0001F310: {self.mastodon_client.get_instance_domain()}")
         feed_generator.id(feed_url)
         feed_generator.link(href=feed_url, rel="self", type="application/atom+xml")
         feed_generator.link(href=self.mastodon_client.get_home_timeline_url(), rel="alternate", type="text/html")
@@ -29,11 +29,11 @@ class FeedBuilder:
 
             if status.reblog is not None:
                 original_status = status.reblog
-                feed_entry.title(f"\uf501 [{status.account.display_name}] \u2192 " +
-                                 f"\uf4ac [{status.reblog.account.display_name}]")
+                feed_entry.title(f"\U0001F501 [{status.account.display_name}] \U00002192 " +
+                                 f"\U0001F4AC [{status.reblog.account.display_name}]")
             else:
                 original_status = status
-                feed_entry.title(f"\uf4ac [{status.account.display_name}]")
+                feed_entry.title(f"\U0001F4AC [{status.account.display_name}]")
 
             feed_entry.id(original_status.url)
             feed_entry.link(href=original_status.url, rel="alternate")
