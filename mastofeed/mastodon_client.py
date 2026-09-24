@@ -7,10 +7,11 @@ class MastodonClient:
     def __init__(self):
         self.APP_NAME = "mastofeed"
         self.APP_SCOPES = ["read:statuses", "read:accounts"]
+
         self.ENV_FILE_PATH = "./.data/.env"
-        self.INSTANCE_URL = f"https://{os.getenv('MASTODON_INSTANCE_NAME')}"
         load_dotenv(self.ENV_FILE_PATH)
 
+        self.INSTANCE_URL = f"https://{os.getenv('MASTODON_INSTANCE_DOMAIN')}"
         client_id = os.getenv("MASTODON_CLIENT_ID")
         client_secret = os.getenv("MASTODON_CLIENT_SECRET")
         access_token = os.getenv("MASTODON_ACCESS_TOKEN")
@@ -69,7 +70,7 @@ class MastodonClient:
 
     @staticmethod
     def get_instance_domain():
-        return os.getenv("MASTODON_INSTANCE_NAME")
+        return os.getenv("MASTODON_INSTANCE_DOMAIN")
 
     def get_user(self):
         return self.mastodon.me()
