@@ -6,7 +6,7 @@ class MastodonClient:
 
     def __init__(self):
         self.APP_NAME = "mastofeed"
-        self.APP_SCOPES = ["read:statuses"]
+        self.APP_SCOPES = ["read:statuses", "read:accounts"]
         self.ENV_FILE_PATH = "./.data/.env"
         self.INSTANCE_URL = f"https://{os.getenv('MASTODON_INSTANCE_NAME')}"
         load_dotenv(self.ENV_FILE_PATH)
