@@ -8,13 +8,21 @@ class FeedBuilder:
 
     def build_feed(self, feed_url):
         feed_generator = FeedGenerator()
-        feed_generator.icon(self.mastodon_client.get_instance_icon())
+
+        feed_generator.title(f"{self.mastodon_client.get_full_username()}'s Home Timeline")
+        feed_generator.subtitle("The Mastodon Home Timeline of " +
+                                self.mastodon_client.get_username() +
+                                " on " +
+                                self.mastodon_client.get_instance_name())
         feed_generator.id(feed_url)
-        feed_generator.language("en")
-        feed_generator.link(href=feed_url, rel="self")
-        feed_generator.title("Your Mastodon Home Timeline")
-        feed_generator.author(name=self.mastodon_client.get_instance_name(),
-                              uri=self.mastodon_client.get_instance_url())
+        feed_generator.link(href=feed_url, rel="self", type="application/atom+xml")
+        feed_generator.link(href=self.mastodon_client.get_home_timeline_url(), rel="alternate", type="text/html")
+        feed_generator.logo(self.mastodon_client.get_instance_logo())
+        feed_generator.updated(datetime.now(timezone.utc))
+        feed_generator.icon(self.mastodon_client.get_instance_icon())
+        feed_generator.generator(generator="python-feedgen",
+                                 version="1.0.0",
+                                 uri="https://lkiesow.github.io/python-feedgen")
 
         for status in self.mastodon_client.get_home_timeline():
             feed_entry = feed_generator.add_entry()
@@ -27,7 +35,7 @@ class FeedBuilder:
                 feed_entry.title(f"Toot by [{status.account.display_name}]")
 
             feed_entry.id(original_status.url)
-            feed_entry.link(href=original_status.url, rel="self")
+            feed_entry.link(href=original_status.url, rel="alternate")
             feed_entry.author(name=original_status.account.display_name,
                               uri=original_status.account.url)
             feed_entry.updated(original_status.created_at)
@@ -47,5 +55,4 @@ class FeedBuilder:
             feed_entry.content(content=content_string, type="html")
             feed_entry.summary(summary=content_string, type="html")
 
-        feed_generator.updated(datetime.now(timezone.utc))
         return feed_generator.atom_str(pretty=True)

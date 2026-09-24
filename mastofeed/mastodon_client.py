@@ -55,12 +55,21 @@ class MastodonClient:
     def get_home_timeline(self):
         return self.mastodon.timeline_home()
 
+    def get_home_timeline_url(self):
+        return self.INSTANCE_URL + "/home"
+
     def get_instance_icon(self):
         return self.mastodon.instance_v2().icon[0].src
+
+    def get_instance_logo(self):
+        return self.mastodon.instance_v2().thumbnail.url
 
     @staticmethod
     def get_instance_name():
         return os.getenv("MASTODON_INSTANCE_NAME")
 
-    def get_instance_url(self):
-        return self.INSTANCE_URL
+    def get_username(self):
+        return self.mastodon.me().username
+
+    def get_full_username(self):
+        return self.mastodon.me().acct
