@@ -61,15 +61,15 @@ class MastodonClient:
     def get_instance_icon(self):
         return self.mastodon.instance_v2().icon[0].src
 
+    def get_instance_language(self):
+        return self.mastodon.instance_v2().languages[0]
+
     def get_instance_logo(self):
         return self.mastodon.instance_v2().thumbnail.url
 
     @staticmethod
-    def get_instance_name():
+    def get_instance_domain():
         return os.getenv("MASTODON_INSTANCE_NAME")
 
-    def get_username(self):
-        return self.mastodon.me().username
-
-    def get_full_username(self):
-        return self.mastodon.me().acct
+    def get_user(self):
+        return self.mastodon.me()

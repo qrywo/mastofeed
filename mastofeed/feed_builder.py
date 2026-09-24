@@ -9,11 +9,10 @@ class FeedBuilder:
     def build_feed(self, feed_url):
         feed_generator = FeedGenerator()
 
-        feed_generator.title(f"{self.mastodon_client.get_full_username()}'s Home Timeline")
-        feed_generator.subtitle("The Mastodon Home Timeline of " +
-                                self.mastodon_client.get_username() +
-                                " on " +
-                                self.mastodon_client.get_instance_name())
+        feed_generator.title("\uf3e0 " + self.mastodon_client.get_user().acct)
+        feed_generator.subtitle(f"\uf464: {self.mastodon_client.get_user().display_name} " +
+                                f"({self.mastodon_client.get_user().username})\n" +
+                                f"\uf310: {self.mastodon_client.get_instance_domain()}")
         feed_generator.id(feed_url)
         feed_generator.link(href=feed_url, rel="self", type="application/atom+xml")
         feed_generator.link(href=self.mastodon_client.get_home_timeline_url(), rel="alternate", type="text/html")
@@ -23,16 +22,18 @@ class FeedBuilder:
         feed_generator.generator(generator="python-feedgen",
                                  version="1.0.0",
                                  uri="https://lkiesow.github.io/python-feedgen")
+        feed_generator.language(self.mastodon_client.get_instance_language())
 
         for status in self.mastodon_client.get_home_timeline():
             feed_entry = feed_generator.add_entry()
 
             if status.reblog is not None:
                 original_status = status.reblog
-                feed_entry.title(f"Boost by [{status.account.display_name}] of a Toot by [{status.reblog.account.display_name}]")
+                feed_entry.title(f"\uf501 [{status.account.display_name}] \u2192 " +
+                                 f"\uf4ac [{status.reblog.account.display_name}]")
             else:
                 original_status = status
-                feed_entry.title(f"Toot by [{status.account.display_name}]")
+                feed_entry.title(f"\uf4ac [{status.account.display_name}]")
 
             feed_entry.id(original_status.url)
             feed_entry.link(href=original_status.url, rel="alternate")
