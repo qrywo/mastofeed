@@ -4,7 +4,7 @@ from mastofeed.feed_builder import FeedBuilder
 
 app = Flask("mastofeed")
 mastodon_client = MastodonClient()
-feed_builder = FeedBuilder(mastodon_client)
+feed_builder = FeedBuilder(url_for("feed", _external=True), mastodon_client)
 
 
 @app.route("/")
@@ -25,7 +25,7 @@ def oauth_callback():
 def feed():
     if not mastodon_client.is_access_provided():
         abort(401)
-    return Response(feed_builder.build_feed(url_for("feed", _external=True)),
+    return Response(feed_builder.build_feed(),
                     mimetype="application/xml")
 
 
