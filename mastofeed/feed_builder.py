@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from datetime import datetime, timezone
 
@@ -28,6 +29,9 @@ class FeedBuilder:
         for status in self.mastodon_client.get_home_timeline():
             feed_entry = feed_generator.add_entry()
 
+            feed_entry.published(status.created_at)
+            feed_entry.updated(status.editet_at)
+
             if status.reblog is not None:
                 original_status = status.reblog
                 feed_entry.title(f"\U0001F501 [{status.account.display_name}] \U00002192 " +
@@ -40,21 +44,28 @@ class FeedBuilder:
             feed_entry.link(href=original_status.url, rel="alternate")
             feed_entry.author(name=original_status.account.display_name,
                               uri=original_status.account.url)
-            feed_entry.updated(original_status.created_at)
 
-            content_string = str(original_status.content)
+            content = str(original_status.content)
+            soup = BeautifulSoup(content, "html.parser")
+            summary = soup.get_text()
+
             for emoji in original_status.emojis:
-                content_string = content_string.replace(f":{emoji.shortcode}:",
-                                                        ('<img rel="emoji" '
-                                                         'draggable="false" '
-                                                         'width="16" '
-                                                         'height="16" '
-                                                         'class="emojione" '
-                                                         'style="height: 1.1em; margin: -.2ex .15em .2ex; object-fit: contain; vertical-align: middle; width: 1.1em;" '
-                                                         f'alt=":{emoji.shortcode}:" '
-                                                         f'title=":{emoji.shortcode}:" '
-                                                         f'src="{emoji.static_url}"/>'))
-            feed_entry.content(content=content_string, type="html")
-            feed_entry.summary(summary=content_string, type="html")
+                emoji_text = f":{emoji.shortcode}:"
+                emoji_repr = ('<img rel="emoji" '
+                              'draggable="false" '
+                              'width="16" '
+                              'height="16" '
+                              'class="emojione" '
+                              'style="height: 1.1em; margin: -.2ex .15em .2ex; object-fit: contain; vertical-align: middle; width: 1.1em;" '
+                              f'alt=":{emoji.shortcode}:" '
+                              f'title=":{emoji.shortcode}:" '
+                              f'src="{emoji.static_url}"/>')
+                content = content.replace(emoji_text, emoji_repr)
+
+            feed_entry.summary(summary=summary, type="text")
+            feed_entry.content(content=content, type="html")
+
+            for tag in original_status.tags():
+                feed_entry.category(term=tag.name, label="#" + tag.name)
 
         return feed_generator.atom_str(pretty=True)
