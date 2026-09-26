@@ -35,6 +35,8 @@ class FeedBuilder:
                                       uri="https://lkiesow.github.io/python-feedgen")
         self.feed_generator.language(self.mastodon_client.get_instance_language())
 
+        self.feed_generator.load_extension("media")
+
     def __build_feed_entry(self, status):
         feed_entry = self.feed_generator.add_entry()
 
@@ -66,6 +68,8 @@ class FeedBuilder:
         for tag in original_status.tags:
             feed_entry.category(term=tag.name, label="#" + tag.name)
 
+        self.__add_media_to_entry(feed_entry, original_status.media_attachments)
+
     @staticmethod
     def __emojify_content(content, emojis):
         for emoji in emojis:
@@ -81,3 +85,40 @@ class FeedBuilder:
                           f'src="{emoji.static_url}"/>')
             content = content.replace(emoji_text, emoji_repr)
         return content
+
+    @staticmethod
+    def __add_media_to_entry(feed_entry, media_attachments):
+        for attachment in media_attachments:
+            content_url = attachment.url
+            medium = attachment.type
+            content_width = None
+            content_height = None
+            frame_rate = None
+            duration = None
+            bit_rate = None
+            if attachment.type == "video" or attachment.type == "gifv":
+                medium = "video"
+                content_width = str(attachment.meta.original.width)
+                content_height = str(attachment.meta.original.height)
+                frame_rate = str(attachment.meta.original.frame_rate)
+                duration = str(attachment.meta.original.duration)
+
+                # calculate bytes per second (mastodon) to kilobits per second (feedgen)
+                bit_rate = str(attachment.meta.original.bitrate * 0.008)
+            elif attachment.type == "image":
+                content_width = str(attachment.meta.original.width)
+                content_height = str(attachment.meta.original.height)
+            elif attachment.type == "audio":
+                duration = str(attachment.meta.original.duration)
+
+                # calculate bytes per second (mastodon) to kilobits per second (feedgen)
+                bit_rate = str(attachment.meta.original.bitrate * 0.008)
+            else:
+                medium = None
+            thumbnail_url = attachment.preview_url
+            thumbnail_width = str(attachment.meta.small.width)
+            thumbnail_height = str(attachment.meta.small.height)
+
+            feed_entry.media.content(url=content_url, medium=medium, width=content_width, height=content_height,
+                                     framerate=frame_rate, duration=duration, bitrate=bit_rate)
+            feed_entry.media.thumbnail(url=thumbnail_url, width=thumbnail_width, height=thumbnail_height)
