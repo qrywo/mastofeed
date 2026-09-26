@@ -4,20 +4,19 @@ from datetime import datetime, timezone
 
 class FeedBuilder:
 
-    def __init__(self, feed_url, mastodon_client):
+    def __init__(self, mastodon_client):
         self.feed_generator = None
-        self.feed_url = feed_url
         self.mastodon_client = mastodon_client
 
-    def build_feed(self):
-        self.__build_feed_generator()
+    def build_feed(self, feed_url):
+        self.__build_feed_generator(feed_url)
 
         for status in self.mastodon_client.get_home_timeline():
             self.__build_feed_entry(status)
 
         return self.feed_generator.atom_str(pretty=True)
 
-    def __build_feed_generator(self):
+    def __build_feed_generator(self, feed_url):
         self.feed_generator = FeedGenerator()
 
         self.feed_generator.title("\U0001F3E0 " + self.mastodon_client.get_user().username +
@@ -25,8 +24,8 @@ class FeedBuilder:
         self.feed_generator.subtitle(f"\U0001F464: {self.mastodon_client.get_user().display_name} " +
                                      f"({self.mastodon_client.get_user().username});\t" +
                                      f"\U0001F310: {self.mastodon_client.get_instance_domain()}")
-        self.feed_generator.id(self.feed_url)
-        self.feed_generator.link(href=self.feed_url, rel="self", type="application/atom+xml")
+        self.feed_generator.id(feed_url)
+        self.feed_generator.link(href=feed_url, rel="self", type="application/atom+xml")
         self.feed_generator.link(href=self.mastodon_client.get_home_timeline_url(), rel="alternate", type="text/html")
         self.feed_generator.logo(self.mastodon_client.get_instance_logo())
         self.feed_generator.updated(datetime.now(timezone.utc))
