@@ -11,7 +11,10 @@ class MastodonClient:
         self.ENV_FILE_PATH = "./.data/.env"
         load_dotenv(self.ENV_FILE_PATH)
 
+        if "MASTODON_INSTANCE_DOMAIN" not in os.environ:
+            os.environ["MASTODON_INSTANCE_DOMAIN"] = "mastodon.social"
         self.INSTANCE_URL = f"https://{os.getenv('MASTODON_INSTANCE_DOMAIN')}"
+
         client_id = os.getenv("MASTODON_CLIENT_ID")
         client_secret = os.getenv("MASTODON_CLIENT_SECRET")
         access_token = os.getenv("MASTODON_ACCESS_TOKEN")
