@@ -56,10 +56,20 @@ class FeedBuilder:
                           uri=original_status.account.url)
 
         content = str(original_status.content)
+        content = self.__emojify_content(content, original_status.emojis)
+
         soup = BeautifulSoup(content, "html.parser")
         summary = soup.get_text()
 
-        for emoji in original_status.emojis:
+        feed_entry.summary(summary=summary, type="text")
+        feed_entry.content(content=content, type="html")
+
+        for tag in original_status.tags():
+            feed_entry.category(term=tag.name, label="#" + tag.name)
+
+    @staticmethod
+    def __emojify_content(content, emojis):
+        for emoji in emojis:
             emoji_text = f":{emoji.shortcode}:"
             emoji_repr = ('<img rel="emoji" '
                           'draggable="false" '
@@ -71,9 +81,4 @@ class FeedBuilder:
                           f'title=":{emoji.shortcode}:" '
                           f'src="{emoji.static_url}"/>')
             content = content.replace(emoji_text, emoji_repr)
-
-        feed_entry.summary(summary=summary, type="text")
-        feed_entry.content(content=content, type="html")
-
-        for tag in original_status.tags():
-            feed_entry.category(term=tag.name, label="#" + tag.name)
+        return content
