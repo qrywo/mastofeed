@@ -39,7 +39,7 @@ class FeedBuilder:
         feed_entry = self.feed_generator.add_entry()
 
         feed_entry.published(status.created_at)
-        feed_entry.updated(status.editet_at)
+        feed_entry.updated(status.edited_at)
 
         if status.reblog is not None:
             original_status = status.reblog
@@ -63,7 +63,7 @@ class FeedBuilder:
         feed_entry.summary(summary=summary, type="text")
         feed_entry.content(content=content, type="html")
 
-        for tag in original_status.tags():
+        for tag in original_status.tags:
             feed_entry.category(term=tag.name, label="#" + tag.name)
 
     @staticmethod
